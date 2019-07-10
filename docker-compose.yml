@@ -1,0 +1,23 @@
+version: '3'
+services:
+  frontend:
+    image: nginx:1.16
+    restart: "on-failure"
+    links:
+      - labhub
+    volumes:
+      - "${CONFIG_PATH}/docker/nginx/conf.d:/etc/nginx/conf.d"
+      - "${CONFIG_PATH}/docker/nginx/dhparam.pem:/etc/ssl/dhparam.pem"
+      - "${CONFIG_PATH}/docker/nginx/labhub.crt:/etc/ssl/certs/labhub.crt"
+      - "${CONFIG_PATH}/docker/nginx/labhub.key:/etc/ssl/private/labhub.key"
+    ports:
+      - "80:80"
+      - "443:443"
+  labhub:
+    image: brndnmtthws/labhub
+    restart: "on-failure"
+    environment:
+      - "LABHUB_TOML=/etc/labhub/LabHub.toml"
+    volumes:
+      - "${CONFIG_PATH}/docker/labhub/LabHub.toml:/etc/labhub/LabHub.toml"
+      - "${CONFIG_PATH}/docker/labhub/ssh:/etc/ssh-keys"
