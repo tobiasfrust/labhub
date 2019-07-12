@@ -1,7 +1,7 @@
 version: '3'
 services:
   frontend:
-    image: nginx:1.16
+    image: nginx:1.16-alpine
     restart: "on-failure"
     links:
       - labhub
