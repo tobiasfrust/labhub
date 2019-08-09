@@ -2,7 +2,7 @@ version: '3'
 services:
   frontend:
     image: nginx:1.16-alpine
-    restart: "on-failure"
+    restart: "always"
     links:
       - labhub
     volumes:
@@ -15,7 +15,7 @@ services:
       - "443:443"
   labhub:
     image: brndnmtthws/labhub
-    restart: "on-failure"
+    restart: "always"
     environment:
       - "LABHUB_TOML=/etc/labhub/LabHub.toml"
     volumes:
