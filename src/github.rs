@@ -415,8 +415,8 @@ fn find_pipeline_id(client: &reqwest::Client, project: &str, sha: &str) -> Resul
             .iter()
             .filter(|p| p.sha.is_some() && p.id.is_some())
             .find(|p| p.sha.as_ref().unwrap() == sha);
-        if pipeline.is_some() {
-            return Ok(pipeline.unwrap().id.unwrap());
+        if let Some(pipeline) = pipeline {
+            return Ok(pipeline.id.unwrap());
         }
         result_len = pipelines.len();
         page += 1;
@@ -516,8 +516,13 @@ pub fn handle_event_body(event_type: &str, body: &str) -> Result<String, Request
         "pull_request" => {
             if config::feature_enabled(&config::Feature::ExternalPr) {
                 let pr: github::PullRequest = serde_json::from_str(body)?;
-                info!("PullRequest action={}", pr.action.as_ref()?);
-                thread::spawn(move || handle_pr(pr));
+                // check if pull request event trigger action is enabled in config file
+                if config::action_enabled(pr.action.as_ref()?) {
+                    info!("PullRequest action={}", pr.action.as_ref()?);
+                    thread::spawn(move || handle_pr(pr));
+                } else {
+                    info!("Event trigger action not enabled. Skipping event.");
+                }
             } else {
                 info!("ExternalPr feature not enabled. Skipping event.");
             }

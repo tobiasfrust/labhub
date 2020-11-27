@@ -23,6 +23,7 @@ pub struct Config {
     pub mappings: Vec<Mapping>,
     pub features: Vec<Feature>,
     pub commands: Commands,
+    pub actions: Actions,
 }
 
 pub fn feature_enabled(feature: &Feature) -> bool {
@@ -31,6 +32,15 @@ pub fn feature_enabled(feature: &Feature) -> bool {
 
 pub fn command_enabled(command: &commands::CommandAction) -> bool {
     feature_enabled(&Feature::Commands) && CONFIG.commands.enabled_commands.contains(&command)
+}
+
+pub fn action_enabled(action: &str) -> bool {
+    CONFIG.actions.enabled_actions.contains(&action.to_string())
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Actions {
+    pub enabled_actions: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
